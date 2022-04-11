@@ -1,21 +1,17 @@
 
-from .serializer import TodoListSerializer, UserDetailSerializer, TaskSerializer, TaskDataValidationSerializer
-from .models import UserDetail, TodoList, SingleTodoList
+from .serializer import TodoListSerializer, UserDetailSerializer
+from .models import UserDetail, TodoList
+
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework import exceptions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
-from django.contrib.auth import get_user_model
-from django.http import Http404 , JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
-User = get_user_model()
 
 def CustomJsonResponse(status,message="",data={}):
     return JsonResponse({
@@ -33,6 +29,7 @@ class LoginUserView(ObtainAuthToken):
             token, created = Token.objects.get_or_create(user=user)
             return CustomJsonResponse(status.HTTP_200_OK,"User logged in successfully.",{'token': token.key,'user_id': user.pk,'email': user.email})
         except Exception as e:
+            print(e)
             result = e.get_codes().get('non_field_errors')
             if result is not None and result[0] == "authorization":
                 return CustomJsonResponse(status.HTTP_401_UNAUTHORIZED,"Invalid username or password.")
@@ -101,4 +98,3 @@ class UserTodo(APIView):
             todo.delete()
             return CustomJsonResponse(status.HTTP_200_OK,"Todo item deleted successfully.")
         return CustomJsonResponse(status.HTTP_401_UNAUTHORIZED,"Failed to delete todo item.")
-

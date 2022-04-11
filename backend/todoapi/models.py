@@ -1,15 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
-)
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db.models.deletion import CASCADE
 from django.conf import settings
 
-
-# Create your models here.
-
 User = settings.AUTH_USER_MODEL
-
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -71,17 +65,8 @@ class User(AbstractBaseUser):
 
     objects = UserManager()
 
-    def get_full_name(self):
-        # The user is identified by their email address
-        return self.email
-
-    def get_short_name(self):
-        # The user is identified by their email address
-        return self.email
-
     def __str__(self):
         return self.email
-
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
         # Simplest possible answer: Yes, always
@@ -91,7 +76,6 @@ class User(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
-
     @property
     def is_staff(self):
         "Is the user a member of staff?"
@@ -101,7 +85,6 @@ class User(AbstractBaseUser):
     def is_admin(self):
         "Is the user a admin member?"
         return self.admin
-
 
 # other models
 class UserDetail(models.Model):
@@ -131,20 +114,3 @@ class TodoList(models.Model):
 
     class Meta:
         db_table = 'TodoList'
-
-
-class SingleTodoList(models.Model):
-    C = "Completed"
-    P = "Pending"
-    CHOICES = (
-        (C, "Completed"),
-        (P, "Pending"),
-    )
-    task_id = models.AutoField(primary_key=True)
-    status = models.CharField(max_length=50, choices=CHOICES, default="Pending")
-    title = models.TextField(max_length=100, null=False, blank=False)
-    description = models.TextField(max_length=250, null=False, blank=False)
-
-    class Meta:
-        db_table = 'SingleTodoList'
-
